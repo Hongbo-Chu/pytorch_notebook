@@ -43,6 +43,9 @@ tensor([10.], requires_grad=True)
 """
 ```
 
+
+
+
 e.g2:
 ```python
 import torch
@@ -85,16 +88,18 @@ opt = Adam(net.parameters(), learning_rate=0.001)
 ```
 通过使用parameterm,可以轻松的将参数传递给优化器。
 
+e.g3:
+```python
+x_tensor = torch.randn(2,5)
+y_tensor = torch.randn(2,5)
+#将tensor转换成Variable
+x = Variable(x_tensor) #Varibale 默认时不要求梯度的，如果要求梯度，需要说明
+y = Variable(y_tensor,requires_grad=True)
+z = torch.sum(x + y)
+```
+通常variable都加载输入变量身上。
 
-
-
-
-
-
-
-
-
-
+## 问题 既然variable有gradient了，为啥parameter还要gradient
 
 ## ..
 `nn.Linear.weigth`和`nn.Linear.bias`都是parameter类的变量，是可以训练的。
