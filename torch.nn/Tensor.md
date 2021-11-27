@@ -40,7 +40,7 @@ a = torch.tensor([1], dtype=torch.float, device=torch.device('cuda'), requires_g
 >"A torch.dtype is an object that represents the data type of a torch.Tensor. PyTorch has twelve different data types:"
 
 torch.dtype 是展示 torch.Tensor 数据类型的类，pytorch 有八个不同的数据类型,下表是完整的 dtype 列表.
-![avatar](D:/pytorch_notebook/torch.nn/imgs/tensor.dtype.jpg)
+![avatar](..\torch.nn\\imgs\\tensor.dtype.jpg)
 
 ### 2.  <b>torch.device</b>
 >"A torch.device is an object representing the device on which a torch.Tensor is or will be allocated."
@@ -49,4 +49,6 @@ torch.dtype 是展示 torch.Tensor 数据类型的类，pytorch 有八个不同�
 
 ### 3.  torch.layoyut
 >"A torch.layout is an object that represents the memory layout of a torch.Tensor. Currently, we support torch.strided (dense Tensors) and have beta support for torch.sparse_coo (sparse COO Tensors)."
+
+torch.layout 是表现 torch.Tensor 内存分布的类，目前只支持 torch.strided
 
