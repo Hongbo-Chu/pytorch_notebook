@@ -117,7 +117,10 @@ for param in vgg.features.parameters():
 2.bias torch.Size([1])
 """
 ```
-e.g2:
+### 2. named_parameter:
+通过named_parameter来查看参数是设置参数。
+
+e.g1:
 ```python
 for name, param in net[0].named_parameters():
     print(name, param.size(), type(param))
@@ -128,7 +131,7 @@ bias torch.Size([3]) <class 'torch.nn.parameter.Parameter'>
 
 """
 ```
-e.g3:
+e.g2:
 ```python
 class MyModel(nn.Module):
     def __init__(self, **kwargs):
@@ -146,7 +149,7 @@ for name, param in n.named_parameters():
 weight1
 """
 ```
-e.g4:
+e.g3:
 ```python
 weight_0 = list(net[0].parameters())[0]
 print(weight_0.data)
@@ -165,22 +168,63 @@ tensor([[-0.2281, -0.0653, -0.1646, -0.2569],
         [ 0.0000,  0.0000,  0.0000,  0.0000]])
 """
 ```
-### 2. named_parameter:
-返回参数和层的名字
 
-e.g1:
-```python
-    net = model()
-    for name, param in net.named_parameters():
-        print(name, param.size())
-```
-e.g2:
-初始化每层的weight为特定值。
+### 3.  初始化每层的weight为特定值。
+e.g5:
+
 ```python
 for name, param in net.named_parameters():
     if 'weight' in name:
         init.normal_(param, mean=0, std=0.01)
         print(name, param.data)
+```
+
+e.g6:
+```python
+def init_weight_(tensor):
+    with torch.no_grad():
+        tensor.uniform_(-10, 10)
+        tensor *= (tensor.abs() >= 5).float()
+
+for name, param in net.named_parameters():
+    if 'weight' in name:
+        init_weight_(param)
+        print(name, param.data)
+        
+"""
+>output:
+0.weight tensor([[ 7.0403,  0.0000, -9.4569,  7.0111],
+        [-0.0000, -0.0000,  0.0000,  0.0000],
+        [ 9.8063, -0.0000,  0.0000, -9.7993]])
+2.weight tensor([[-5.8198,  7.7558, -5.0293]])
+
+"""
+```
+### 4. 共享模型参数
+在有些情况下，我们希望在多个层之间共享模型参数。 Module类的forward函数里多次调用同一个层。此外，如果我们传入Sequential的模块是同一个Module实例的话参数也是共享的。
+```python
+linear = nn.Linear(1, 1, bias=False)
+net = nn.Sequential(linear, linear) 
+print(net)
+for name, param in net.named_parameters():
+    init.constant_(param, val=3)
+    print(name, param.data)
+"""
+Sequential(
+  (0): Linear(in_features=1, out_features=1, bias=False)
+  (1): Linear(in_features=1, out_features=1, bias=False)
+)
+0.weight tensor([[3.]])
+"""
+```
+在内存中，这两个线性层其实一个对象:
+```py
+print(id(net[0]) == id(net[1]))
+print(id(net[0].weight) == id(net[1].weight))
+"""
+True
+True
+"""
 ```
 
 
