@@ -99,7 +99,91 @@ z = torch.sum(x + y)
 ```
 通常variable都加载输入变量身上。
 
-## 问题 既然variable有gradient了，为啥parameter还要gradient
+## parameter相关方法：
+### 1. requir_grad:
+虽然已经作为参数添加到模型里面去了，但是还是可以选择是否训练这一层参数。
+e.g1:
+
+```python
+for param in vgg.features.parameters():
+ 
+    param.requires_grad=False
+"""
+>output:
+<class 'generator'>
+0.weight torch.Size([3, 4])
+0.bias torch.Size([3])
+2.weight torch.Size([1, 3])
+2.bias torch.Size([1])
+"""
+```
+e.g2:
+```python
+for name, param in net[0].named_parameters():
+    print(name, param.size(), type(param))
+"""
+>output
+weight torch.Size([3, 4]) <class 'torch.nn.parameter.Parameter'>
+bias torch.Size([3]) <class 'torch.nn.parameter.Parameter'>
+
+"""
+```
+e.g3:
+```python
+class MyModel(nn.Module):
+    def __init__(self, **kwargs):
+        super(MyModel, self).__init__(**kwargs)
+        self.weight1 = nn.Parameter(torch.rand(20, 20))
+        self.weight2 = torch.rand(20, 20)
+    def forward(self, x):
+        pass
+    
+n = MyModel()
+for name, param in n.named_parameters():
+    print(name)
+"""
+>output
+weight1
+"""
+```
+e.g4:
+```python
+weight_0 = list(net[0].parameters())[0]
+print(weight_0.data)
+print(weight_0.grad) # 反向传播前梯度为None
+Y.backward()
+print(weight_0.grad)
+
+"""
+>output
+tensor([[ 0.2719, -0.0898, -0.2462,  0.0655],
+        [-0.4669, -0.2703,  0.3230,  0.2067],
+        [-0.2708,  0.1171, -0.0995,  0.3913]])
+None
+tensor([[-0.2281, -0.0653, -0.1646, -0.2569],
+        [-0.1916, -0.0549, -0.1382, -0.2158],
+        [ 0.0000,  0.0000,  0.0000,  0.0000]])
+"""
+```
+### 2. named_parameter:
+返回参数和层的名字
+
+e.g1:
+```python
+    net = model()
+    for name, param in net.named_parameters():
+        print(name, param.size())
+```
+e.g2:
+初始化每层的weight为特定值。
+```python
+for name, param in net.named_parameters():
+    if 'weight' in name:
+        init.normal_(param, mean=0, std=0.01)
+        print(name, param.data)
+```
+
+
 
 ## ..
 `nn.Linear.weigth`和`nn.Linear.bias`都是parameter类的变量，是可以训练的。
